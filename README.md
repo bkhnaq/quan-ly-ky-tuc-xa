@@ -1,79 +1,66 @@
-# Website quản lý ký túc xá
+# KTX Campus — Website quản lý ký túc xá
 
-Bài tập ReactJS + Vite, CSS thuần và React Router. Giao diện đơn giản, sử dụng dữ liệu mẫu, chưa có backend hoặc chức năng thêm/sửa/xóa.
+Đồ án giao diện website quản lý ký túc xá sinh viên, hỗ trợ xem thông tin phòng ở, danh sách sinh viên, hóa đơn và thông báo từ ban quản lý.
 
-## Chạy project
+## Công nghệ sử dụng
 
-Cài Node.js 22.12+ hoặc 24 LTS, mở terminal tại thư mục project:
+- ReactJS: xây dựng giao diện theo component.
+- Vite: chạy môi trường phát triển và build project.
+- React Router: điều hướng giữa các trang.
+- CSS thuần: định dạng giao diện và bố cục trên điện thoại.
+
+## Các trang
+
+| Đường dẫn | Nội dung |
+| --- | --- |
+| `/` | Trang chủ, thống kê tổng quan và thông báo mới |
+| `/rooms` | Danh sách phòng, sức chứa, giá phòng và tình trạng còn chỗ |
+| `/students` | Danh sách sinh viên nội trú |
+| `/invoices` | Thông tin hóa đơn và trạng thái thanh toán |
+| `/notifications` | Thông báo từ ban quản lý |
+| `/about-us` | Giới thiệu website |
+
+Website hỗ trợ chuyển trang bằng menu hoặc truy cập trực tiếp qua URL. Đường dẫn không tồn tại hiển thị trang 404.
+
+## Cài đặt và chạy
+
+Yêu cầu Node.js 22.12+ hoặc 24 LTS.
 
 ```bash
+git clone https://github.com/bkhnaq/quan-ly-ky-tuc-xa.git
+cd quan-ly-ky-tuc-xa
 npm install
 npm run dev
 ```
 
-Mở **http://localhost:3000**.
+Truy cập **http://localhost:3000**.
 
-Nếu PowerShell chặn `npm.ps1`, dùng `npm.cmd install` và `npm.cmd run dev`.
-
-## Các trang
-
-| URL | Nội dung |
-| --- | --- |
-| `/` | Trang chủ |
-| `/rooms` | Danh sách phòng ở |
-| `/students` | Danh sách sinh viên |
-| `/invoices` | Hóa đơn mẫu |
-| `/notifications` | Thông báo |
-| `/about-us` | Giới thiệu |
-
-Click menu hoặc mở trực tiếp `http://localhost:3000/about-us` để chuyển trang. URL không tồn tại hiển thị trang 404.
-
-## Các file cần hiểu
-
-- `index.html`: trang HTML gốc.
-- `src/main.jsx`: khởi tạo React, bọc ứng dụng bằng `BrowserRouter`.
-- `src/App.jsx`: khai báo đường dẫn bằng `Routes` và `Route`.
-- `src/components/Layout.jsx`: header, menu `NavLink`, footer và `Outlet`.
-- `src/pages/`: nội dung các trang, viết HTML bằng cú pháp JSX của React.
-- `src/data.js`: mảng dữ liệu mẫu; các trang dùng `.map()` để hiển thị.
-- `src/styles.css`: CSS chung và định dạng trên điện thoại.
-
-## Build
+Build và xem trước bản production:
 
 ```bash
 npm run build
 npm run preview
 ```
 
-Vite tạo bản build trong `dist/`. Khi triển khai lên hosting cần cấu hình SPA fallback về `index.html` để mở trực tiếp các URL con. Bài tập chỉ yêu cầu nộp repository, không bắt buộc triển khai website.
+## Cấu trúc project
 
-## Đưa lên GitHub
+```text
+src/
+├── components/
+│   └── Layout.jsx       # Header, menu và footer dùng chung
+├── pages/
+│   ├── Dashboard.jsx    # Trang chủ
+│   ├── Rooms.jsx        # Phòng ở
+│   ├── Students.jsx     # Sinh viên
+│   ├── Invoices.jsx     # Hóa đơn
+│   ├── Notifications.jsx
+│   └── About.jsx
+├── App.jsx              # Khai báo các route
+├── main.jsx             # Khởi tạo ứng dụng
+├── data.js              # Dữ liệu mẫu
+└── styles.css           # Định dạng giao diện
+```
 
-1. Đăng nhập tài khoản **bkhnaq**, mở <https://github.com/new>.
-2. Tạo repo tên **quan-ly-ky-tuc-xa**, để trống README và `.gitignore`.
-3. Nếu chưa có Git trong thư mục project, chạy:
+## Phạm vi
 
-   ```bash
-   git init -b main
-   git add .
-   git commit -m "Tao website quan ly ky tuc xa bang React"
-   ```
-
-4. Kết nối repository và push:
-
-   ```bash
-   git remote add origin https://github.com/bkhnaq/quan-ly-ky-tuc-xa.git
-   git push -u origin main
-   ```
-
-   Nếu đã có `origin`, kiểm tra bằng `git remote -v` trước khi thêm.
-
-5. Sau khi push thành công, nộp link:
-
-   ```text
-   https://github.com/bkhnaq/quan-ly-ky-tuc-xa
-   ```
-
-Đây là địa chỉ dự kiến; repository chỉ tồn tại sau khi được tạo và push.
-
-Tài liệu: [Vite](https://vite.dev/guide/), [React Router](https://reactrouter.com/start/declarative/routing).
+Phiên bản hiện tại phục vụ bài tập giao diện, sử dụng dữ liệu mẫu tĩnh. Website chưa kết nối cơ sở dữ liệu, chưa có đăng nhập, thêm/sửa/xóa dữ liệu hoặc thanh toán thực tế.
