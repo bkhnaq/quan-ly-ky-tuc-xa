@@ -40,6 +40,8 @@ dotnet run --project backend/Ktx.Api
 
 API chạy ở `http://localhost:5000/api/rooms`. Migration tạo database và 6 phòng mẫu ở lần đầu; dữ liệu được giữ khi khởi động lại.
 
+Mở **http://localhost:5000/swagger** để xem toàn bộ API và thử request bằng **Try it out → Execute** (môi trường Development).
+
 Terminal 2 — frontend:
 
 ```bash

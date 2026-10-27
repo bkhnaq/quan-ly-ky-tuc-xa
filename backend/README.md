@@ -15,6 +15,19 @@ dotnet run --project backend/Ktx.Api
 
 Backend chạy tại `http://localhost:5000`. Mở `http://localhost:5000/api/rooms` để xem JSON. Đường dẫn `/` không có trang HTML.
 
+## Swagger UI — xem và thử API
+
+Sau khi chạy backend, mở **http://localhost:5000/swagger**. Swagger UI hiển thị các endpoint theo nhóm `Rooms` và `Statistics`.
+
+1. Chọn endpoint cần thử, ví dụ `GET /api/rooms`.
+2. Bấm **Try it out**.
+3. Nhập `id` hoặc request body nếu endpoint yêu cầu.
+4. Bấm **Execute**, xem mã trạng thái và JSON trong **Server response**.
+
+Với POST/PUT, thay body mẫu bằng dữ liệu hợp lệ như ví dụ bên dưới. Các thao tác ghi sẽ thay đổi database đang dùng. Swagger được bật trong môi trường **Development**, là môi trường mặc định khi chạy `dotnet run --project backend/Ktx.Api` với launch profile có sẵn.
+
+Tài liệu OpenAPI dạng JSON: `http://localhost:5000/swagger/v1/swagger.json`.
+
 `database update` áp dụng migration đã có trong repository, tạo database `backend/Ktx.Api/App_Data/ktx.db` và 6 phòng mẫu. Không cần cài SQL Server. Dữ liệu thay đổi vẫn được giữ khi tắt backend. File database không được đưa lên Git; người clone project tạo lại database bằng migration.
 
 ## Endpoint

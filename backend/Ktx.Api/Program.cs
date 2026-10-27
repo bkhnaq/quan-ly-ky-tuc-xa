@@ -6,6 +6,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.OpenApiInfo
+    {
+        Title = "KTX Campus API",
+        Version = "v1",
+        Description = "API quản lý phòng ở và thống kê ký túc xá."
+    });
+});
 
 // Đường dẫn DB luôn tính từ thư mục backend, kể cả khi chạy ở thư mục gốc.
 var connection = new SqliteConnectionStringBuilder(
@@ -23,6 +32,16 @@ builder.Services.AddCors(options => options.AddPolicy("ReactApp", policy =>
 
 var app = builder.Build();
 app.UseExceptionHandler();
+// Trang xem và thử API khi chạy project ở môi trường Development.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("v1/swagger.json", "KTX Campus API v1");
+        options.DocumentTitle = "KTX Campus — Swagger UI";
+    });
+}
 app.UseCors("ReactApp");
 app.MapControllers();
 app.Run();
