@@ -1,0 +1,37 @@
+@baseUrl = http://localhost:5000/api
+
+### GET: danh sách phòng
+GET {{baseUrl}}/rooms
+
+### GET: chi tiết phòng
+GET {{baseUrl}}/rooms/A101
+
+### POST: thêm phòng (201 Created; trùng mã trả 409)
+POST {{baseUrl}}/rooms
+Content-Type: application/json
+
+{
+  "id": "C101",
+  "building": "C",
+  "capacity": 4,
+  "occupied": 0,
+  "price": 650000
+}
+
+### PUT: cập nhật phòng (204 No Content)
+PUT {{baseUrl}}/rooms/C101
+Content-Type: application/json
+
+{
+  "id": "C101",
+  "building": "C",
+  "capacity": 6,
+  "occupied": 0,
+  "price": 700000
+}
+
+### DELETE: xóa phòng trống (204 No Content)
+DELETE {{baseUrl}}/rooms/C101
+
+### GET: thống kê trang chủ
+GET {{baseUrl}}/statistics

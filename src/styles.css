@@ -203,6 +203,27 @@ tbody tr:hover { background-color: #f8fbf9; }
 .not-found { text-align: center; padding: 60px 0; }
 .not-found > span { font-size: 70px; color: #8dbba1; font-weight: bold; }
 
+/* Form quản lý phòng gọi API */
+button, input { font: inherit; }
+button { cursor: pointer; border: 0; }
+button:disabled { opacity: .55; cursor: not-allowed; }
+button:focus-visible, input:focus-visible { outline: 3px solid #65bda3; outline-offset: 3px; }
+.room-form { margin-bottom: 22px; }
+.room-form fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+.form-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.form-grid label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.form-grid input { border: 1px solid #cbd9d0; border-radius: 5px; padding: 9px 12px; width: 100%; min-width: 0; }
+.form-grid input:read-only { background: #edf1ee; }
+.form-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.button.secondary { background: #e8eeea; color: #345843; }
+.button.secondary:hover { background: #dbe6df; }
+.button.danger { background: #a53636; }
+.button.danger:hover { background: #882a2a; }
+.feedback { padding: 14px 18px; border-radius: 6px; margin-bottom: 20px; }
+.feedback.error { background: #fff0ee; color: #9b3030; }
+.feedback.success { background: #e6f4e9; color: #286b40; }
+.room-list-heading { margin-bottom: 18px; }
+
 /* 6. Hiển thị trên điện thoại */
 @media (max-width: 700px) {
   .header-content { flex-direction: column; align-items: flex-start; gap: 0; }
@@ -217,6 +238,7 @@ tbody tr:hover { background-color: #f8fbf9; }
   .stat span { font-size: 12px; }
   .stat strong { font-size: 27px; }
   .room-grid { grid-template-columns: 1fr; gap: 15px; }
+  .form-grid { grid-template-columns: 1fr; }
   .section-heading { flex-wrap: wrap; gap: 0; }
   .card { padding: 20px; }
   .table-container { padding: 0; }

@@ -1,8 +1,21 @@
 import { Link } from 'react-router';
-import { rooms, students, notices } from '../data';
+import { useEffect, useState } from 'react';
+import { notices } from '../data';
+import { getStatistics, getApiError } from '../services/api';
 
 export default function Dashboard() {
-  const availableRooms = rooms.filter(room => room.occupied < room.capacity).length;
+  const [statistics, setStatistics] = useState(null);
+  const [error, setError] = useState('');
+  const [reload, setReload] = useState(0);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setError('');
+    getStatistics(controller.signal)
+      .then(response => setStatistics(response.data))
+      .catch(error => { if (!controller.signal.aborted) setError(getApiError(error)); });
+    return () => controller.abort();
+  }, [reload]);
 
   return (
     <>
@@ -13,11 +26,13 @@ export default function Dashboard() {
         <Link to="/rooms" className="button">Xem danh sách phòng</Link>
       </section>
 
-      <section className="stats-grid" aria-label="Thống kê ký túc xá">
-        <div className="card stat"><span>Tổng số phòng</span><strong>{rooms.length}</strong></div>
-        <div className="card stat"><span>Sinh viên nội trú</span><strong>{students.length}</strong></div>
-        <div className="card stat"><span>Phòng còn chỗ</span><strong>{availableRooms}</strong></div>
-      </section>
+      {error && <div className="feedback error" role="alert">{error} <button className="button secondary" onClick={() => setReload(value => value + 1)}>Thử lại</button></div>}
+      {!statistics && !error && <p role="status">Đang tải thống kê...</p>}
+      {statistics && <section className="stats-grid" aria-label="Thống kê ký túc xá">
+        <div className="card stat"><span>Tổng số phòng</span><strong>{statistics.totalRooms}</strong></div>
+        <div className="card stat"><span>Chỗ đang sử dụng</span><strong>{statistics.occupiedPlaces}</strong></div>
+        <div className="card stat"><span>Phòng còn chỗ</span><strong>{statistics.availableRooms}</strong></div>
+      </section>}
 
       <section className="card">
         <div className="section-heading">

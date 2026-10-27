@@ -1,12 +1,5 @@
-// Dữ liệu mẫu dùng để hiển thị giao diện, chưa kết nối cơ sở dữ liệu.
-export const rooms = [
-  { id: 'A101', building: 'A', capacity: 4, occupied: 3, price: 650000 },
-  { id: 'A102', building: 'A', capacity: 4, occupied: 4, price: 650000 },
-  { id: 'A103', building: 'A', capacity: 6, occupied: 2, price: 500000 },
-  { id: 'B101', building: 'B', capacity: 4, occupied: 4, price: 650000 },
-  { id: 'B102', building: 'B', capacity: 4, occupied: 2, price: 650000 },
-  { id: 'B103', building: 'B', capacity: 6, occupied: 3, price: 500000 },
-];
+// Các danh sách dưới đây vẫn là dữ liệu mẫu độc lập.
+// Phòng ở và thống kê được lấy từ backend bằng Axios (services/api.js).
 
 export const students = [
   { id: 'SV001', name: 'Nguyễn Minh Anh', faculty: 'Công nghệ thông tin', room: 'B101' },
