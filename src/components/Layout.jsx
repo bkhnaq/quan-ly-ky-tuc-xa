@@ -1,7 +1,27 @@
-import { NavLink, Outlet } from 'react-router';
+import { useState } from 'react';
+import { NavLink, Outlet, useNavigate } from 'react-router';
+import { useAuth } from '../context/AuthContext';
+import { getApiError } from '../services/api';
 
 // NavLink tự thêm trạng thái active cho menu của trang đang mở.
 export default function Layout() {
+  const { user, status, logout, storageWarning } = useAuth();
+  const [logoutError, setLogoutError] = useState('');
+  const [loggingOut, setLoggingOut] = useState(false);
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    setLogoutError('');
+    try {
+      await logout();
+      navigate('/login', { replace: true });
+    } catch (error) {
+      setLogoutError(getApiError(error));
+    } finally {
+      setLoggingOut(false);
+    }
+  }
   return (
     <>
       <header className="header">
@@ -19,10 +39,21 @@ export default function Layout() {
           <NavLink to="/invoices">Hóa đơn</NavLink>
           <NavLink to="/notifications">Thông báo</NavLink>
           <NavLink to="/about-us">Giới thiệu</NavLink>
+          <div className="auth-nav">
+            {status === 'authenticated' ? <>
+              <NavLink to="/account" className="user-email">{user.email}</NavLink>
+              <button className="button secondary" disabled={loggingOut} onClick={handleLogout}>{loggingOut ? 'Đang đăng xuất...' : 'Đăng xuất'}</button>
+            </> : status !== 'loading' && <>
+              <NavLink to="/login">Đăng nhập</NavLink>
+              <NavLink to="/register">Đăng ký</NavLink>
+            </>}
+          </div>
         </div>
       </nav>
 
       <main className="container main-content">
+        {logoutError && <p className="feedback error" role="alert">{logoutError}</p>}
+        {storageWarning && <p className="feedback" role="status">{storageWarning}</p>}
         {/* Outlet hiển thị nội dung trang tương ứng với URL. */}
         <Outlet />
       </main>

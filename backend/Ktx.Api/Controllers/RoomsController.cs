@@ -4,10 +4,12 @@ using Ktx.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ktx.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/rooms")]
 public class RoomsController(KtxDbContext db) : ControllerBase
 {

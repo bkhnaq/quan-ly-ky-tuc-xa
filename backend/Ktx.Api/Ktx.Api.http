@@ -1,5 +1,26 @@
 @baseUrl = http://localhost:5000/api
 
+### Đăng ký tài khoản mẫu (đổi email nếu đã tồn tại)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "student@example.test",
+  "password": "Demo12345"
+}
+
+### Đăng nhập trước khi gọi API phòng (client cần lưu/gửi cookie)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "student@example.test",
+  "password": "Demo12345"
+}
+
+### User hiện tại
+GET {{baseUrl}}/auth/me
+
 ### GET: danh sách phòng
 GET {{baseUrl}}/rooms
 
@@ -35,3 +56,6 @@ DELETE {{baseUrl}}/rooms/C101
 
 ### GET: thống kê trang chủ
 GET {{baseUrl}}/statistics
+
+### Đăng xuất
+POST {{baseUrl}}/auth/logout

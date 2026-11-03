@@ -224,11 +224,28 @@ button:focus-visible, input:focus-visible { outline: 3px solid #65bda3; outline-
 .feedback.success { background: #e6f4e9; color: #286b40; }
 .room-list-heading { margin-bottom: 18px; }
 
+/* Đăng ký, đăng nhập và tài khoản */
+.auth-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-left: auto; }
+.auth-nav .button { margin-top: 0; padding: 8px 12px; font-size: 14px; }
+.user-email { max-width: 240px; overflow-wrap: anywhere; }
+.auth-card { max-width: 480px; margin: 15px auto; padding: 30px; }
+.auth-card fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+.auth-fields { grid-template-columns: 1fr; }
+.auth-fields small { color: #627a6b; margin-top: -8px; }
+.auth-submit { width: 100%; margin-top: 20px; }
+.auth-card .feedback { margin: 16px 0 0; }
+.auth-card > .feedback { margin: 0 0 20px; }
+.auth-switch { text-align: center; margin: 20px 0 0; }
+.account-card { max-width: 650px; margin: auto; }
+.account-card dt { font-weight: bold; margin-top: 16px; }
+.account-card dd { margin: 4px 0 0; overflow-wrap: anywhere; }
+
 /* 6. Hiển thị trên điện thoại */
 @media (max-width: 700px) {
   .header-content { flex-direction: column; align-items: flex-start; gap: 0; }
   .header-content > span { font-size: 13px; }
   .nav-links { gap: 3px; }
+  .auth-nav { margin-left: 0; width: 100%; border-top: 1px solid #dfe7e2; padding-top: 7px; }
   .nav-links a { padding: 7px 10px; font-size: 13px; }
   .hero { padding: 24px; }
   h1 { font-size: 25px; }

@@ -6,15 +6,23 @@ import Students from './pages/Students';
 import Invoices from './pages/Invoices';
 import Notifications from './pages/Notifications';
 import About from './pages/About';
+import Auth from './pages/Auth';
+import Account from './pages/Account';
+import RequireAuth from './components/RequireAuth';
 
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="rooms" element={<Rooms />} />
-        <Route path="students" element={<Students />} />
-        <Route path="invoices" element={<Invoices />} />
+        <Route element={<RequireAuth />}>
+          <Route index element={<Dashboard />} />
+          <Route path="rooms" element={<Rooms />} />
+          <Route path="students" element={<Students />} />
+          <Route path="invoices" element={<Invoices />} />
+          <Route path="account" element={<Account />} />
+        </Route>
+        <Route path="login" element={<Auth key="login" mode="login" />} />
+        <Route path="register" element={<Auth key="register" mode="register" />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="about-us" element={<About />} />
         <Route path="*" element={

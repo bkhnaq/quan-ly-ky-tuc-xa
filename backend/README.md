@@ -13,22 +13,37 @@ dotnet ef database update --project backend/Ktx.Api
 dotnet run --project backend/Ktx.Api
 ```
 
-Backend chạy tại `http://localhost:5000`. Mở `http://localhost:5000/api/rooms` để xem JSON. Đường dẫn `/` không có trang HTML.
+Backend chạy tại `http://localhost:5000`. API phòng cần đăng nhập; mở Swagger để đăng ký/đăng nhập rồi gọi `/api/rooms`. Đường dẫn `/` không có trang HTML.
 
 ## Swagger UI — xem và thử API
 
 Sau khi chạy backend, mở **http://localhost:5000/swagger**. Swagger UI hiển thị các endpoint theo nhóm `Rooms` và `Statistics`.
 
-1. Chọn endpoint cần thử, ví dụ `GET /api/rooms`.
+1. Tạo tài khoản qua `POST /api/auth/register`, rồi đăng nhập bằng `POST /api/auth/login`.
 2. Bấm **Try it out**.
 3. Nhập `id` hoặc request body nếu endpoint yêu cầu.
-4. Bấm **Execute**, xem mã trạng thái và JSON trong **Server response**.
+4. Bấm **Execute**, xem mã trạng thái và JSON trong **Server response**. Sau khi đăng nhập thành công, thử `GET /api/rooms`; cookie được trình duyệt gửi tự động.
 
 Với POST/PUT, thay body mẫu bằng dữ liệu hợp lệ như ví dụ bên dưới. Các thao tác ghi sẽ thay đổi database đang dùng. Swagger được bật trong môi trường **Development**, là môi trường mặc định khi chạy `dotnet run --project backend/Ktx.Api` với launch profile có sẵn.
 
 Tài liệu OpenAPI dạng JSON: `http://localhost:5000/swagger/v1/swagger.json`.
 
 `database update` áp dụng migration đã có trong repository, tạo database `backend/Ktx.Api/App_Data/ktx.db` và 6 phòng mẫu. Không cần cài SQL Server. Dữ liệu thay đổi vẫn được giữ khi tắt backend. File database không được đưa lên Git; người clone project tạo lại database bằng migration.
+
+## Xác thực tài khoản
+
+| Method | Endpoint | Kết quả |
+| --- | --- | --- |
+| POST | `/api/auth/register` | 201 + user; 400 nếu dữ liệu sai; 409 nếu email trùng |
+| POST | `/api/auth/login` | 200 + user + cookie; 401 nếu email/mật khẩu không đúng |
+| GET | `/api/auth/me` | 200 + user hiện tại; 401 nếu không có phiên hợp lệ |
+| POST | `/api/auth/logout` | 204, xóa cookie |
+
+Đăng ký và đăng nhập nhận JSON `{ "email": "student@example.test", "password": "Demo12345" }`. Mật khẩu 8–128 ký tự, có chữ cái và chữ số. Email được trim và chuẩn hóa; unique index `NormalizedEmail` ngăn đăng ký trùng kể cả request đồng thời.
+
+`AuthController` lưu hash qua `PasswordHasher<AppUser>`, truy vấn user từ DB bằng email và kiểm tra hash bằng `VerifyHashedPassword`. Response chỉ có `id`, `email`, `createdAt`. Cookie `Ktx.Session` là HttpOnly, SameSite Strict, hết hạn sau 8 giờ; middleware kiểm tra user còn trong DB. API phòng và thống kê yêu cầu `[Authorize]`.
+
+Migration `AddUsers` chỉ thêm bảng `Users` và unique index, không thay bảng `Rooms`. Chạy `dotnet ef database update --project backend/Ktx.Api` để nâng cấp dữ liệu cũ. Chỉ khi cần hoàn tác trong môi trường thử: `dotnet ef database update InitialCreate --project backend/Ktx.Api`; thao tác này xóa bảng user, nên phải sao lưu và không chạy tùy ý trên dữ liệu thật.
 
 ## Endpoint
 
@@ -133,7 +148,7 @@ api.delete('/rooms/A101');
 
 `src/pages/Rooms.jsx` gọi các hàm này trong `useEffect` và các sự kiện submit/sửa/xóa, sau đó cập nhật giao diện. Trang chủ gọi `GET /api/statistics`.
 
-Vì frontend và backend khác cổng, `Program.cs` đăng ký CORS cho `http://localhost:3000` và `http://127.0.0.1:3000`. Khi đổi cổng frontend, cập nhật `AllowedOrigins`. Có thể đổi địa chỉ API qua `.env` của frontend theo `.env.example`, rồi khởi động lại Vite.
+Vì frontend và backend khác cổng, `Program.cs` đăng ký CORS cho `http://localhost:3000` và `http://127.0.0.1:3000`, có `AllowCredentials` để gửi cookie. Axios bật `withCredentials`. Khi đổi cổng frontend, cập nhật `AllowedOrigins`. Frontend và API phải cùng hostname (không trộn localhost và 127.0.0.1) vì cookie SameSite Strict. Có thể đổi địa chỉ API qua `.env` theo `.env.example`, rồi khởi động lại Vite.
 
 ## Kiểm tra API
 
@@ -143,10 +158,10 @@ Khi backend đang chạy, mở terminal khác ở thư mục gốc:
 npm run test:api
 ```
 
-Script tạo phòng thử nghiệm chưa tồn tại, kiểm tra CRUD, validation, thống kê và xóa dữ liệu thử trong khối `finally`.
+Script tạo tài khoản test ngẫu nhiên thuộc `example.test`, kiểm tra xác thực, cookie, bảo vệ API, CRUD, validation và thống kê. Phòng thử được xóa và phiên được đăng xuất trong `finally`; tài khoản test được giữ lại. Nên chạy với database thử riêng qua cấu hình `ConnectionStrings__DefaultConnection` của backend.
 
 ## Phạm vi
 
-Module phòng ở và thống kê dùng database. Số người ở phòng được nhập thủ công; chưa có liên kết với danh sách sinh viên mẫu. Các module sinh viên, hóa đơn, thông báo vẫn là dữ liệu tĩnh ở frontend. API phục vụ học tập tại máy, chưa có đăng nhập/phân quyền.
+Tài khoản, phòng ở và thống kê dùng database. Số người ở phòng được nhập thủ công; chưa liên kết với danh sách sinh viên mẫu. Sinh viên, hóa đơn, thông báo vẫn là dữ liệu tĩnh. Bản bài tập cho các tài khoản đã đăng nhập cùng quyền quản lý phòng; chưa phân quyền vai trò, xác minh email, đặt lại mật khẩu hoặc giới hạn lần đăng nhập sai. Khi triển khai cần HTTPS (cookie có Secure khi chạy HTTPS) và hoàn thiện các cơ chế này.
 
 Tài liệu tham khảo: [ASP.NET Core Web API](https://learn.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-10.0), [EF Core với SQLite](https://learn.microsoft.com/en-us/ef/core/get-started/overview/first-app?tabs=netcore-cli), [EF Core migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/), [Axios](https://axios-http.com/docs/api_intro).

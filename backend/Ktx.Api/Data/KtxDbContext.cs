@@ -6,9 +6,19 @@ namespace Ktx.Api.Data;
 public class KtxDbContext(DbContextOptions<KtxDbContext> options) : DbContext(options)
 {
     public DbSet<Room> Rooms => Set<Room>();
+    public DbSet<AppUser> Users => Set<AppUser>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AppUser>(entity =>
+        {
+            entity.HasKey(user => user.Id);
+            entity.Property(user => user.Email).HasMaxLength(254).IsRequired();
+            entity.Property(user => user.NormalizedEmail).HasMaxLength(254).IsRequired();
+            entity.HasIndex(user => user.NormalizedEmail).IsUnique();
+            entity.Property(user => user.PasswordHash).IsRequired();
+        });
+
         modelBuilder.Entity<Room>(entity =>
         {
             entity.HasKey(room => room.Id);

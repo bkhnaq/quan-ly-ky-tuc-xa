@@ -1,14 +1,45 @@
 import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
 
 const baseUrl = process.env.API_URL || 'http://localhost:5000/api';
+let cookie = '';
 async function request(path, method = 'GET', body) {
-  return fetch(`${baseUrl}${path}`, {
+  const response = await fetch(`${baseUrl}${path}`, {
     method,
-    headers: body ? { 'Content-Type': 'application/json' } : {},
+    headers: { ...(body ? { 'Content-Type': 'application/json' } : {}), ...(cookie ? { Cookie: cookie } : {}) },
     body: body ? JSON.stringify(body) : undefined,
     signal: AbortSignal.timeout(10000),
   });
+  const setCookie = response.headers.get('set-cookie');
+  if (setCookie) cookie = setCookie.split(';')[0];
+  return response;
 }
+
+// Mỗi lần chạy tạo một tài khoản test riêng, không dùng thông tin người thật.
+const credentials = { email: `test-${randomUUID()}@example.test`, password: `Test9-${randomUUID()}` };
+assert.equal((await request('/auth/me')).status, 401);
+assert.equal((await request('/rooms')).status, 401);
+assert.equal((await request('/statistics')).status, 401);
+for (const body of [{}, { ...credentials, email: 'invalid-email' }, { ...credentials, password: 'abc' }, { ...credentials, password: 'onlyletters' }, { ...credentials, password: 'A1'.repeat(65) }]) {
+  assert.equal((await request('/auth/register', 'POST', body)).status, 400);
+}
+const registered = await request('/auth/register', 'POST', credentials);
+assert.equal(registered.status, 201);
+const user = await registered.json();
+assert.deepEqual(Object.keys(user).sort(), ['createdAt', 'email', 'id']);
+assert.equal(user.email, credentials.email);
+assert.equal((await request('/auth/me')).status, 401, 'Register does not log in automatically');
+assert.equal((await request('/auth/register', 'POST', { ...credentials, email: ` ${credentials.email.toUpperCase()} ` })).status, 409);
+assert.equal((await request('/auth/login', 'POST', { ...credentials, password: 'Wrongpass123' })).status, 401);
+assert.equal((await request('/auth/login', 'POST', { ...credentials, email: `missing-${randomUUID()}@example.test` })).status, 401);
+const loggedIn = await request('/auth/login', 'POST', { ...credentials, email: credentials.email.toUpperCase() });
+assert.equal(loggedIn.status, 200);
+assert.deepEqual(await loggedIn.json(), user);
+assert.match(loggedIn.headers.get('set-cookie'), /httponly/i);
+assert.match(loggedIn.headers.get('set-cookie'), /samesite=strict/i);
+assert.equal((await request('/auth/me')).status, 200);
+assert.deepEqual(await (await request('/auth/me')).json(), user);
+assert.equal((await fetch(`${baseUrl}/rooms`, { headers: { Cookie: 'Ktx.Session=invalid' } })).status, 401);
 
 const initial = await request('/rooms');
 assert.equal(initial.status, 200, 'GET rooms');
@@ -57,16 +88,21 @@ try {
   } });
   assert.equal(cors.status, 204);
   assert.equal(cors.headers.get('access-control-allow-origin'), 'http://localhost:3000');
+  assert.equal(cors.headers.get('access-control-allow-credentials'), 'true');
 
   assert.equal((await request(`/rooms/${id}`, 'PUT', { ...updated, occupied: 0 })).status, 204);
   assert.equal((await request(`/rooms/${id}`, 'DELETE')).status, 204);
   created = false;
   assert.equal((await request(`/rooms/${id}`)).status, 404);
-  console.log('PASS: GET, POST, PUT, DELETE, validation, duplicate IDs, occupied-room protection, statistics, CORS.');
+  console.log('PASS: registration, login, user profile, cookie authentication, GET/POST/PUT/DELETE, validation, statistics, CORS.');
 } finally {
   if (created) {
     await request(`/rooms/${id}`, 'PUT', room);
     const removed = await request(`/rooms/${id}`, 'DELETE');
     assert.equal(removed.status, 204, `Không dọn được phòng thử nghiệm ${id}`);
   }
+  assert.equal((await request('/auth/logout', 'POST')).status, 204);
+  assert.equal((await request('/auth/me')).status, 401);
+  assert.equal((await request('/rooms')).status, 401);
+  console.log('PASS: logout clears the session. One generated test account remains in the test database.');
 }

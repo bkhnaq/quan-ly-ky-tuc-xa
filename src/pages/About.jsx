@@ -20,7 +20,8 @@ export default function About() {
         <h2>Công nghệ sử dụng</h2>
         <p>ReactJS để xây dựng giao diện, Vite để chạy project, CSS để định dạng và React Router để chuyển trang bằng menu hoặc URL.</p>
         <p>Backend sử dụng ASP.NET Core Web API và EF Core để lưu phòng ở trong SQLite. Frontend gửi yêu cầu GET, POST, PUT, DELETE bằng Axios.</p>
-        <p className="demo-note">Phòng ở hỗ trợ thêm, sửa, xóa và lưu dữ liệu. Các trang sinh viên, hóa đơn, thông báo vẫn là dữ liệu mẫu độc lập. Website phục vụ học tập, chưa có đăng nhập hoặc thanh toán thực tế.</p>
+        <p>Tài khoản hỗ trợ đăng ký, đăng nhập và đăng xuất; các trang quản lý yêu cầu đăng nhập.</p>
+        <p className="demo-note">Phòng ở và tài khoản được lưu trong database. Các trang sinh viên, hóa đơn, thông báo vẫn là dữ liệu mẫu độc lập. Website phục vụ học tập, chưa phân quyền theo vai trò hoặc thanh toán thực tế.</p>
       </section>
     </>
   );

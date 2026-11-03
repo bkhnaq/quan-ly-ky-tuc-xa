@@ -1,10 +1,12 @@
 using Ktx.Api.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ktx.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/statistics")]
 public class StatisticsController(KtxDbContext db) : ControllerBase
 {
